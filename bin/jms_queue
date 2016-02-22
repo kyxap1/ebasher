@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#===============================================================================
+#
+#          FILE:  bin/jmx_queue
+#
+#         USAGE:  ./jmx_queue <ip> <queue-name>
+#
+#   DESCRIPTION:  Measuring JMS queue depth
+#
+#       OPTIONS:  ---
+#  REQUIREMENTS:  bash4, Linux
+#          BUGS:  ---
+#         NOTES:  ---
+#        AUTHOR:  Alexander Kyxap <kyxap@kyxap.pro>
+#       COMPANY:  Fasten.com
+#       VERSION:  1.0
+#       CREATED:  02/20/2016 11:16:01 PM UTC
+#      REVISION:  ---
+#===============================================================================
+
+set -e
+set -o nounset
+
+SCRIPT_DIR=${BASH_SOURCE%/*}
+
+_conf="$SCRIPT_DIR/../conf/config.sh"
+[[ -f $_conf ]] || { echo "[ERROR] Could not load configuration file: $_conf" >&2; exit 1; }
+source $_conf
+
+in_path "jshon curl"
+min_args "2"
+
+WF_HOST=${1:?}
+WF_QUEUE_NAME=${2:?}
+WF_QUEUE_OBJ=${3:-messages-added}
+
+
+# scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
+
+#WF_QUEUE_URI+="${WF_MGMT_SCHEME:-http}"
+#WF_QUEUE_URI+="${WF_AUTH_USER:-admin}"
+#WF_QUEUE_URI+="${WF_AUTH_PASS:-P@sSw0rD}"
+#WF_QUEUE_URI+="${WF_PORT:-9990}"
+
+WF_PATH="management/subsystem/messaging/hornetq-server/default/jms-queue/${WF_QUEUE_NAME}ServiceInQueue"
+WF_QUERY="operation=resource&recursive&include-runtime&json.pretty"
+declare -a URL=( "${WF_MGMT_SCHEME:-http}" "${WF_AUTH_USER:-admin}" "${WF_AUTH_PASS:-P@sSw0rD}" "$WF_HOST" "${WF_PORT:-9990}" "$WF_PATH" "$WF_QUERY" )
+
+DATAFILE="${DATADIR}/q${WF_HOST}.json"
+
+# compile URL
+
+read a b c d e f g <<< ${URL[@]}
+URL="$a://$b:$c@$d:$e/$f?$g"
+echo $URL
+
+##WF_QUEUE_URL="${WF_MGMT_SCHEME}://${WF_MGMT_AUTH}@${WF_HOST}:${WF_PORT}/${WF_QUEUE_RESOURCE}?${WF_MGMT_ARGS}"i
+##WF_QUEUE_URL="${WF_MGMT_SCHEME}://${WF_HOST}:${WF_PORT}"
+#
+## read json
+#runcmd curl -s --max-time 1 --digest "$WF_QUEUE_URL" || die "No valid data recieved: ${WF_MGMT_SCHEME}://${WF_HOST}:${WF_PORT}"
+#
+## save json
+#write_file "$_res" "$DATAFILE"
+#
+## read object value
+#if ! _res=$(runcmd jshon -e "$WF_QUEUE_OBJ" <<< $_res)
+#then
+#  die "No object value recieved: $WF_QUEUE_OBJ"
+#fi
+#
+## return value
+#is_numeric "$_res"
+#
+#echo "$_res"
+#
+#exit 0
