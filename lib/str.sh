@@ -22,10 +22,10 @@ set -e
 set -o nounset
 
 #===  FUNCTION  ================================================================
-#          NAME: filter_str() 
-#   DESCRIPTION:  Purge input from comments, empty lines
-#    PARAMETERS:  
-#       RETURNS:  
+#          NAME: filter_str
+#   DESCRIPTION: remove comments, line breaks, newlines from string
+#    PARAMETERS: $string
+#       RETURNS: 
 #===============================================================================
 filter_str()
 {
@@ -34,10 +34,10 @@ filter_str()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:  
-#   DESCRIPTION:  
-#    PARAMETERS:  
-#       RETURNS:  
+#          NAME: is_word
+#   DESCRIPTION: check if string is matched word pattern
+#    PARAMETERS: $string
+#       RETURNS: 
 #===============================================================================
 is_word()
 {
@@ -45,8 +45,15 @@ is_word()
   [[ $@ =~ $_pattern ]] || die "Is not alphabetic: $@"
 }
 
+#===  FUNCTION  ================================================================
+#          NAME: is_numeric
+#   DESCRIPTION: check if string is matched numeric pattern
+#    PARAMETERS: 
+#       RETURNS: 
+#===============================================================================
 is_numeric()
 {
   local _pattern='[[:digit:]]'
   [[ $@ =~ $_pattern ]] || die "Is not numeric: $@"
 }
+

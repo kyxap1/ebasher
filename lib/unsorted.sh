@@ -22,10 +22,10 @@ set -e
 set -o nounset
 
 #===  FUNCTION  ================================================================
-#          NAME:  
-#   DESCRIPTION:  
-#    PARAMETERS:  
-#       RETURNS:  
+#          NAME: runcmd
+#   DESCRIPTION: run command with exit code check
+#    PARAMETERS: $cmd
+#       RETURNS: 
 #===============================================================================
 runcmd()
 {
@@ -37,10 +37,10 @@ runcmd()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:  
-#   DESCRIPTION:  
-#    PARAMETERS:  
-#       RETURNS:  
+#          NAME: min_args
+#   DESCRIPTION: set minimum args count to be passed to script
+#    PARAMETERS: $min_arg_count
+#       RETURNS: 
 #===============================================================================
 min_args()
 {
@@ -49,12 +49,11 @@ min_args()
   [[ $_required -le $_passed ]] || die "Wrong arguments count: $_passed"
 }
 
-
 #===  FUNCTION  ================================================================
-#          NAME:  
-#   DESCRIPTION:  
-#    PARAMETERS:  
-#       RETURNS:  
+#          NAME: usage
+#   DESCRIPTION: print usage information
+#    PARAMETERS: ---
+#       RETURNS: 
 #===============================================================================
 usage()
 {

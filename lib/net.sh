@@ -22,10 +22,10 @@ set -e
 set -o nounset
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
-#       RETURNS:
+#          NAME: is_ipv4
+#   DESCRIPTION: check if string is rfc ipv4 addr match
+#    PARAMETERS: $ipaddr
+#       RETURNS: 
 #===============================================================================
 is_ipv4()
 {
@@ -38,11 +38,23 @@ is_ipv4()
 	fi
 }
 
+#===  FUNCTION  ================================================================
+#          NAME: is_host
+#   DESCRIPTION: check if string is rfc host match
+#    PARAMETERS: $host
+#       RETURNS: 
+#===============================================================================
 is_host()
 {
 	:
 }
 
+#===  FUNCTION  ================================================================
+#          NAME: is_up
+#   DESCRIPTION: check if host is listening on specified port
+#    PARAMETERS: $host $port $protocol
+#       RETURNS: 
+#===============================================================================
 is_up()
 {
 	local _host="${1:?}"
@@ -55,3 +67,4 @@ is_up()
 		die "No listener on ${_host}:${_port} proto $_proto"
 	fi
 }
+

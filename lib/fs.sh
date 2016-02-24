@@ -22,9 +22,9 @@ set -e
 set -o nounset
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: setup_dir
+#   DESCRIPTION: make directories from array without logging
+#    PARAMETERS: array of $path
 #       RETURNS:
 #===============================================================================
 setup_dir()
@@ -37,9 +37,9 @@ setup_dir()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: make_file
+#   DESCRIPTION: make file with path provided
+#    PARAMETERS: $path
 #       RETURNS:
 #===============================================================================
 make_file()
@@ -49,9 +49,9 @@ make_file()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: make_dir
+#   DESCRIPTION: make directory with full path
+#    PARAMETERS: $path
 #       RETURNS:
 #===============================================================================
 make_dir()
@@ -61,9 +61,9 @@ make_dir()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: is_file
+#   DESCRIPTION: check if path is file
+#    PARAMETERS: $path
 #       RETURNS:
 #===============================================================================
 is_file()
@@ -72,9 +72,9 @@ is_file()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: is_readable
+#   DESCRIPTION: check if file is readable
+#    PARAMETERS: $file
 #       RETURNS:
 #===============================================================================
 is_readable()
@@ -83,9 +83,9 @@ is_readable()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: is_writable
+#   DESCRIPTION: check if file is writable
+#    PARAMETERS: $file
 #       RETURNS:
 #===============================================================================
 is_writable()
@@ -94,9 +94,9 @@ is_writable()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: is_block
+#   DESCRIPTION: check if file is block device
+#    PARAMETERS: $file
 #       RETURNS:
 #===============================================================================
 is_block()
@@ -105,9 +105,9 @@ is_block()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: is_dir
+#   DESCRIPTION: check if path is dir
+#    PARAMETERS: $path
 #       RETURNS:
 #===============================================================================
 is_dir()
@@ -116,9 +116,9 @@ is_dir()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: is_executable
+#   DESCRIPTION: check if file is executable
+#    PARAMETERS: $file
 #       RETURNS:
 #===============================================================================
 is_executable()
@@ -127,9 +127,9 @@ is_executable()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME:
-#   DESCRIPTION:
-#    PARAMETERS:
+#          NAME: in_path
+#   DESCRIPTION: look for file in $PATH and exports $file as FILE=full_path
+#    PARAMETERS: array of filenames
 #       RETURNS:
 #===============================================================================
 in_path()
@@ -147,7 +147,7 @@ in_path()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME: read_file()
+#          NAME: read_file
 #   DESCRIPTION: read file from disk
 #    PARAMETERS: $file
 #       RETURNS:
@@ -159,8 +159,8 @@ read_file()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME: write_file()
-#   DESCRIPTION: save data to disk with file overwrite
+#          NAME: write_file
+#   DESCRIPTION: save data on disk with file overwrite
 #    PARAMETERS: $msg $file
 #       RETURNS:
 #===============================================================================
@@ -173,7 +173,7 @@ write_file()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME: append_file()
+#          NAME: append_file
 #   DESCRIPTION: append data to file
 #    PARAMETERS: $msg $file
 #       RETURNS:
@@ -187,8 +187,8 @@ append_file()
 }
 
 #===  FUNCTION  ================================================================
-#          NAME: truncate_file()
-#   DESCRIPTION: truncate file
+#          NAME: truncate_file
+#   DESCRIPTION: Copy /dev/null to file
 #    PARAMETERS: $file
 #       RETURNS:
 #===============================================================================
