@@ -31,7 +31,7 @@ write_log()
 {
   local _log="$LOG"
 	local _msg="$(date -R -u) $@"
-  echo "$_msg" | tee -a "$_log"
+  echo "$_msg" >> "$_log"
 }
 
 #===  FUNCTION  ================================================================

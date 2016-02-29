@@ -38,7 +38,13 @@ WF_QUEUE_OBJ=${3:-messages-added}
 
 WF_PATH="management/subsystem/messaging/hornetq-server/default/jms-queue/${WF_QUEUE_NAME}ServiceInQueue"
 WF_QUERY="operation=resource&recursive&include-runtime&json.pretty"
-declare -a URL=( "${WF_MGMT_SCHEME:-http}" "${WF_AUTH_USER:-admin}" "${WF_AUTH_PASS:-P@sSw0rD}" "$WF_HOST" "${WF_PORT:-9990}" "$WF_PATH" "$WF_QUERY" )
+declare -a URL=( \
+	"${WF_MGMT_SCHEME:-http}"\
+	"${WF_AUTH_USER:-admin}" \
+	"${WF_AUTH_PASS:-P@sSw0rD}"\
+	"$WF_HOST" \
+	"${WF_PORT:-9990}" \
+	"$WF_PATH" "$WF_QUERY" )
 
 DATAFILE="${DATADIR}/q${WF_HOST}.json"
 
@@ -57,9 +63,9 @@ fi
 write_file "$_res" "$DATAFILE"
 
 # read object value
-if ! _res=$(runcmd jshon -e "$WF_QUEUE_OBJ" <<< $_res)
+if ! _res=$(runcmd jshon -e "$WF_QUEUE_OBJ" <<< ${_res} )
 then
-  die "No object value recieved: $WF_QUEUE_OBJ"
+	die "No object value recieved: $WF_QUEUE_OBJ"
 fi
 
 # return value

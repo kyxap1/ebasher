@@ -169,7 +169,7 @@ write_file()
   local _msg="$1"
   local _file="$2"
   is_writable "$_file" || die "Failed to write file: $_file"
-  echo "$_msg" | tee "$_file"
+  echo "$_msg" > "$_file"
 }
 
 #===  FUNCTION  ================================================================
@@ -183,7 +183,7 @@ append_file()
   local _msg="$1"
   local _file="$2"
   is_writable "$_file" || die "Failed to append to file: $_file"
-  echo "$_msg" | tee -a "$_file"
+  echo "$_msg" >> "$_file"
 }
 
 #===  FUNCTION  ================================================================
