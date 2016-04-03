@@ -1,0 +1,147 @@
+#!/usr/bin/env bash 
+#===============================================================================
+#
+#          FILE: plots.update
+# 
+#         USAGE: ./plots.update
+# 
+#   DESCRIPTION: 
+# 
+#       OPTIONS: ---
+#  REQUIREMENTS: ---
+#          BUGS: ---
+#         NOTES: ---
+#        AUTHOR: Aleksandr Kukhar (kyxap), kyxap@kyxap.pro
+#       COMPANY: Fasten.com
+#  ORGANIZATION: Operations
+#       CREATED: 04/02/2016 21:57
+#      REVISION:  ---
+#===============================================================================
+
+set -e
+set -o nounset                              # Treat unset variables as an error
+
+SCRIPT_DIR=${BASH_SOURCE%/*}
+
+conf="$SCRIPT_DIR/../conf/config.sh"
+[[ -f $conf ]] || { echo "[ERROR] Could not load configuration file: $conf" >&2; exit 1; }
+source $conf
+
+
+ENV="${ENV:-Prod}"
+
+declare -x WF_AUTH_PASS=
+
+SERVICE_SUFFIX="(srv|app)"
+GATEWAY_SUFFIX="gtw"
+
+GRAPHS=()
+URLS=()
+
+PLOT_PORT="8083"
+PLOT_URL_EXT="http://workbench.fasten.com:${PLOT_PORT}"
+PLOT_URL_LOC="http://localhost:${PLOT_PORT}"
+INDEX="/public_html/plots/index.html"
+SERVERS="/public_html/plots/servers.txt"
+
+in_path "jmx_queue list_aws"
+
+generate_servers()
+{
+  ${LIST_AWS} | grep -E "$ENV (Core|Gate).*($SERVICE_SUFFIX|$GATEWAY_SUFFIX)([[:digit:]]+)" | awk '{print $3" "$10}' | sort -zk2 > "$SERVERS"
+}
+
+generate_graphs()
+{
+  declare -A queues
+  declare -a graphs
+  declare -a urls
+
+  local res
+
+  # loop over all matched instances
+  while read IP NAME
+  do  					    # NAME=billing-gtw2
+    ROLE=${NAME%-*}			    # ROLE=billing
+    NODE=${NAME#${NAME/[[:digit:]]*}}	    # NODE=2
+    TYPE=${NAME#${ROLE}-}		    # TYPE=gtw
+    TYPE=${TYPE%${NODE}}
+
+    QUEUE=
+
+    [[ $SERVICE_SUFFIX =~ $TYPE ]] && QUEUE=${ROLE}Service
+    [[ $GATEWAY_SUFFIX =~ $TYPE ]] && QUEUE=${ROLE}Gate
+
+    # get queue
+    if ! res=$(runcmd ${JMX_QUEUE} ${IP} ${QUEUE} message-count 2>/dev/null)
+    then
+      # skip on fail
+      display "Could not recieve JMX data: ${IP} ${QUEUE} ${ROLE}"
+      continue
+    fi
+
+    # concatenate to queues global array
+    queues[${ROLE}-${TYPE}]+=${res},
+
+  done < <( cat "$SERVERS" )
+
+  # loop over services queues to fetch URL
+  for k in "${!queues[@]}"
+  do
+    local key="$k"
+    local value="${queues[$key]}"
+
+    # chomp
+    local value=${value:0:-1}
+
+    # image to include in html
+    local graph="${PLOT_URL_EXT}/${key}.svg"
+    graphs+=("$graph")
+
+    # graph urls to update
+    local url="${graph}?d=${value}"
+    urls+=("$url")
+  done
+
+  GRAPHS=("${graphs[@]}")
+  URLS=("${urls[@]}")
+
+  # update plots
+  if ! runcmd curl -s --max-time 1 "${URLS[@]}" >/dev/null
+  then
+    display "No valid data recieved: ${URLS[@]}"
+  fi
+
+  unset queues
+  unset graphs
+  unset urls
+}
+
+generate_html()
+{
+  echo "<!DOCTYPE html><html lang='en'><head>"
+  echo "<title>Queues Dashboard</title><meta charset='utf-8'/>"
+  echo "<style type='text/css'>object{display:inline-block;}</style></head>"
+
+  local i=0
+  # build index.html with graphs
+  for graph in "${GRAPHS[@]}"
+  do
+    i=$((i+1))
+    echo "<object id='live${i}' data='${graph}' type='image/svg+xml'></object>"
+  done
+
+  echo "</html>"
+}
+
+generate_servers
+
+# initial update
+generate_graphs
+generate_html > "$INDEX"
+
+while :
+do
+  generate_graphs
+  sleep 5
+done

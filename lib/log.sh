@@ -30,7 +30,7 @@ set -o nounset
 write_log()
 {
   local _log="$LOG"
-	local _msg="$(date -R -u) $@"
+  local _msg="$(date -R -u) $@"
   echo "$_msg" >> "$_log"
 }
 

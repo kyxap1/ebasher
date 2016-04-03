@@ -22,7 +22,7 @@ set -e
 set -o nounset
 
 LANG=C
-PATH="/bin:/usr/sbin:/usr/bin:/sbin:/usr/local/bin:/usr/local/sbin"
+PATH="/bin:/usr/sbin:/usr/bin:/sbin:/usr/local/bin:/usr/local/sbin:${SCRIPT_DIR}/../bin:${PATH}"
 
 DATADIR="$SCRIPT_DIR/../data"
 LOGDIR="$SCRIPT_DIR/../log"

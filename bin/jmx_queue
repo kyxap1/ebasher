@@ -23,9 +23,9 @@ set -o nounset
 
 SCRIPT_DIR=${BASH_SOURCE%/*}
 
-_conf="$SCRIPT_DIR/../conf/config.sh"
-[[ -f $_conf ]] || { echo "[ERROR] Could not load configuration file: $_conf" >&2; exit 1; }
-source $_conf
+conf="$SCRIPT_DIR/../conf/config.sh"
+[[ -f $conf ]] || { echo "[ERROR] Could not load configuration file: $conf" >&2; exit 1; }
+source $conf
 
 in_path "jshon curl"
 min_args "2"
@@ -36,41 +36,42 @@ WF_QUEUE_OBJ=${3:-messages-added}
 
 # scheme:[//[user:password@]host[:port]][/]path[?query][#fragment]
 
-WF_PATH="management/subsystem/messaging/hornetq-server/default/jms-queue/${WF_QUEUE_NAME}ServiceInQueue"
+WF_PATH="management/subsystem/messaging/hornetq-server/default/jms-queue/${WF_QUEUE_NAME}InQueue"
 WF_QUERY="operation=resource&recursive&include-runtime&json.pretty"
 declare -a URL=( \
-	"${WF_MGMT_SCHEME:-http}"\
-	"${WF_AUTH_USER:-admin}" \
-	"${WF_AUTH_PASS:-P@sSw0rD}"\
-	"$WF_HOST" \
-	"${WF_PORT:-9990}" \
-	"$WF_PATH" "$WF_QUERY" )
+  "${WF_MGMT_SCHEME:-http}" \
+  "${WF_AUTH_USER:-admin}" \
+  "${WF_AUTH_PASS:-P@sSw0rD}" \
+  "$WF_HOST" \
+  "${WF_PORT:-9990}" \
+  "$WF_PATH" \
+  "$WF_QUERY" )
 
 DATAFILE="${DATADIR}/q${WF_HOST}.json"
 
 # compile URL
-
 read a b c d e f g <<< ${URL[@]}
 WF_QUEUE_URL="$a://$b:$c@$d:$e/$f?$g"
 
 # read json
-if ! _res=$(runcmd curl -s --max-time 1 --digest "$WF_QUEUE_URL")
+if ! res=$(runcmd curl -s --max-time 1 --digest "$WF_QUEUE_URL")
 then
-	die "No valid data recieved: $WF_QUEUE_URL"
+  die "No valid data recieved: $WF_QUEUE_URL"
 fi
 
 # save json
-write_file "$_res" "$DATAFILE"
+write_file "$res" "$DATAFILE"
 
 # read object value
-if ! _res=$(runcmd jshon -e "$WF_QUEUE_OBJ" <<< ${_res} )
+if ! res=$(runcmd jshon -e "$WF_QUEUE_OBJ" <<< ${res} )
 then
-	die "No object value recieved: $WF_QUEUE_OBJ"
+  die "No object value recieved: $WF_QUEUE_OBJ"
 fi
 
 # return value
-is_numeric "$_res"
+is_numeric "$res"
 
-echo "$_res"
+echo "$res"
 
 exit 0
+

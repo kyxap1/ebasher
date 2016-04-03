@@ -142,7 +142,7 @@ in_path()
     then
       die "No $_binary binary found in $PATH"
     fi
-    declare -rx ${_binary^^}="$_res"
+    declare -grx ${_binary^^}="$_res"
   done
 }
 
